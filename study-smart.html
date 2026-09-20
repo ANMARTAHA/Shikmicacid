@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study smart</title>
+<style>
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f3f5fa;--card:#ffffff;--ink:#1b2236;--mut:#5d667c;--line:#dde2ee;--navy:#1f3864;--acc:#3b5bdb;
+--pre-bg:#eaf0fb;--pre:#4472c4;--int:#4a5872;--gold-bg:#fff1cc;--gold:#c99400;--fin-bg:#fce8e8;--fin:#d62828;
+--arrow:#e8833a;--leave:#d9480f;--enter:#2b8a3e;--chg:#c77d00;--form:#2b8a3e;--brk:#d9480f;
+--shadow:0 1px 2px rgba(20,30,60,.06),0 8px 24px rgba(20,30,60,.06)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:1180px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:24px;line-height:1.15;margin:2px 0 4px;color:var(--navy);letter-spacing:-.01em}
+.sub{margin:0 0 12px;color:var(--mut);font-size:13.5px;max-width:60ch}
+.rule{height:3px;background:var(--pre);border-radius:2px;margin:0 0 12px}
+.steps{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.step{flex:0 0 auto;scroll-snap-align:center;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 13px;font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
+.step .n{display:inline-block;min-width:20px;height:20px;line-height:20px;text-align:center;border-radius:10px;background:var(--int);color:#fff;font-size:11px;font-weight:700;margin-right:6px}
+.step.done .n{background:var(--enter)}
+.step.on{border-color:var(--arrow);box-shadow:0 0 0 2px var(--arrow) inset;font-weight:600}
+.step.on .n{background:var(--arrow)}
+.grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:920px){.grid{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);align-items:start}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:12px}
+.names{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:baseline;font-size:14px;margin:0 2px 8px}
+.names .a,.names .b{font-weight:650}
+.names .ar{color:var(--arrow);font-weight:700}
+.badge{display:inline-block;margin:0 0 8px 2px;padding:3px 10px;border-radius:8px;font-size:12.5px;font-weight:650}
+.badge.gold{background:var(--gold-bg);color:var(--gold);border:1.5px solid var(--gold)}
+.badge.final{background:var(--fin-bg);color:var(--fin);border:1.5px solid var(--fin)}
+#stage{display:block;width:100%;height:auto;background:var(--card);border-radius:10px;touch-action:manipulation}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;height:40px;min-width:44px;padding:0 12px;font:inherit;font-size:16px;cursor:pointer}
+.btn.main{background:var(--arrow);border-color:var(--arrow);color:#fff;min-width:56px;font-weight:700}
+.btn:focus-visible,.step:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.btn:disabled{opacity:.4;cursor:default}
+#scrub{flex:1 1 140px;min-width:120px;accent-color:var(--arrow);height:28px}
+.opts{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:8px;font-size:13px;color:var(--mut)}
+.opts label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.opts select{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);padding:3px 6px}
+.side{display:grid;gap:14px}
+.info h2{font-size:18px;margin:0 0 2px;color:var(--navy)}
+.info .tag{color:var(--mut);font-size:13px;margin:0 0 8px}
+.figlabel{display:inline-block;font-style:italic;color:var(--leave);background:color-mix(in srgb,var(--arrow) 12%,transparent);border-left:3px solid var(--arrow);padding:3px 9px;border-radius:0 8px 8px 0;font-size:13.5px;margin:0 0 10px}
+.eq{font-size:14px;line-height:1.9;margin:0 0 10px}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12.5px;font-weight:650;border:1.5px solid}
+.chip.out{color:var(--leave);border-color:var(--leave);background:color-mix(in srgb,var(--leave) 12%,transparent)}
+.chip.in{color:var(--enter);border-color:var(--enter);background:color-mix(in srgb,var(--enter) 12%,transparent)}
+.eq .cmp{font-weight:600}.eq .ar,.eq .plus{color:var(--mut);margin:0 2px}
+.phases{list-style:none;margin:0 0 8px;padding:0}
+.phases li{padding:7px 10px;border-left:3px solid var(--line);margin:0 0 4px;color:var(--mut);cursor:pointer;border-radius:0 8px 8px 0;font-size:14px;transition:background .2s,color .2s}
+.phases li.on{border-left-color:var(--arrow);color:var(--ink);background:color-mix(in srgb,var(--arrow) 10%,transparent)}
+.note{font-size:12.5px;color:var(--mut);margin:6px 0 0;padding:8px 10px;border:1px dashed var(--line);border-radius:8px}
+.note:empty{display:none}
+.mapcard h3{margin:0 0 6px;font-size:15px;color:var(--navy)}
+#map{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:12px;color:var(--mut)}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:3px;border:2px solid;vertical-align:-1px;margin-right:5px}
+.key{margin-top:10px;font-size:12.5px;color:var(--mut)}
+.key b{font-weight:650}
+.k-form{color:var(--form)}.k-brk{color:var(--brk)}.k-chg{color:var(--chg)}
+.credits{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:13px;color:var(--mut);margin:0 0 10px}
+.credits a{color:var(--acc);text-decoration:none;font-weight:600}
+.credits a:hover{text-decoration:underline}
+.credits.bottom{margin:16px 2px 0;padding-top:12px;border-top:1px solid var(--line)}
+.foot{margin:16px 2px 0;font-size:12px;color:var(--mut);max-width:80ch}
+.edge{fill:none;stroke:var(--line);stroke-width:2}
+.edge.on{stroke:var(--arrow);stroke-width:3;stroke-dasharray:6 4;animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+.node{cursor:pointer}
+@media (prefers-reduced-motion:reduce){.edge.on{animation:none}.phases li{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Study smart</h1>
+  <p class="sub"><b>Shikimic acid pathway</b> – interactive explorer. Watch each reaction happen atom by atom. Built from your pathway figure: tap a step, press play, or drag the slider to scrub through a reaction.</p>
+  <div class="credits" id="creditsTop">© Study smart <span>·</span> <a href="https://t.me/AnmarTaha" target="_blank" rel="noopener">Telegram @AnmarTaha</a> <span>·</span> <a href="https://instagram.com/a.za18" target="_blank" rel="noopener">Instagram a.za18</a></div>
+  <div class="rule"></div>
+  <nav class="steps" id="steps" aria-label="Reactions"></nav>
+
+  <div class="grid">
+    <section class="card" aria-label="Reaction animation">
+      <div class="names"><span class="a" id="nA"></span><span class="ar">→</span><span class="b" id="nB"></span></div>
+      <div id="badge" class="badge" hidden></div>
+      <svg id="stage" viewBox="0 0 560 420" role="img" aria-label="Animated molecular structures for the selected reaction"></svg>
+      <div class="ctrl">
+        <button class="btn" id="prev" aria-label="Previous reaction">⏮</button>
+        <button class="btn main" id="play" aria-label="Play or pause">▶</button>
+        <button class="btn" id="replay" aria-label="Replay reaction">↻</button>
+        <button class="btn" id="next" aria-label="Next reaction">⏭</button>
+        <input id="scrub" type="range" min="0" max="1000" value="0" aria-label="Reaction progress">
+      </div>
+      <div class="opts">
+        <label>Speed <select id="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+        <label><input type="checkbox" id="auto" checked> Continue to next reaction</label>
+        <label><input type="checkbox" id="hl" checked> Highlight changes</label>
+      </div>
+      <div class="key"><b class="k-form">Green bond</b> forms · <b class="k-brk">red bond</b> breaks · <b class="k-chg">amber bond</b> changes type · <span class="chip out">leaves</span> <span class="chip in">enters</span></div>
+    </section>
+
+    <div class="side">
+      <section class="card info" aria-live="polite">
+        <h2 id="iTitle"></h2>
+        <p class="tag" id="iTag"></p>
+        <div class="figlabel" id="iFig"></div>
+        <p class="eq" id="iEq"></p>
+        <ol class="phases" id="iPhases"></ol>
+        <p class="note" id="iNote"></p>
+      </section>
+      <section class="card mapcard">
+        <h3>Pathway map</h3>
+        <svg id="map" viewBox="0 0 414 296" role="img" aria-label="Map of the shikimic acid pathway"></svg>
+        <div class="legend">
+          <span><i style="border-color:var(--pre);background:var(--pre-bg)"></i>Precursor</span>
+          <span><i style="border-color:var(--int)"></i>Intermediate</span>
+          <span><i style="border-color:var(--gold);background:var(--gold-bg)"></i>Shikimic acid</span>
+          <span><i style="border-color:var(--fin);background:var(--fin-bg)"></i>Final amino acid</span>
+        </div>
+      </section>
+    </div>
+  </div>
+  <p class="foot">Source: the pathway figure you provided. Animations are schematic: atoms move and bonds change as the figure’s structures and labels imply. Notes marked “not in the figure” add context the figure does not state.</p>
+  <div class="credits bottom" id="creditsBottom">© Study smart <span>·</span> <a href="https://t.me/AnmarTaha" target="_blank" rel="noopener">Telegram @AnmarTaha</a> <span>·</span> <a href="https://instagram.com/a.za18" target="_blank" rel="noopener">Instagram a.za18</a></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+/* ---------- math helpers ---------- */
+var clamp=function(x,a,b){a=a===undefined?0:a;b=b===undefined?1:b;return Math.min(b,Math.max(a,x));};
+var ease=function(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;};
+var smooth=function(x){return x*x*(3-2*x);};
+var loc=function(t,w){return w?clamp((t-w[0])/((w[1]-w[0])||1e-6)):clamp(t);};
+var lerp=function(a,b,u){return a+(b-a)*u;};
+var F=20, HL=true;
+
+/* ---------- scene DSL ---------- */
+function A(id,p0,p1,o){return Object.assign({id:id,p0:p0,p1:p1||p0},o||{});}
+function B(a,b,s0,s1,o){return Object.assign({a:a,b:b,s0:s0,s1:s1===undefined?s0:s1},o||{});}
+var RC=[250,250],RAD=60;
+var V=[-90,-30,30,90,150,210].map(function(a){return [RC[0]+RAD*Math.cos(a*Math.PI/180),RC[1]+RAD*Math.sin(a*Math.PI/180)];});
+var R=function(dx,dy){return [RC[0]+dx,RC[1]+dy];};
+var RO=function(i,d){var p=V[i],dx=p[0]-RC[0],dy=p[1]-RC[1],L=Math.hypot(dx,dy);return [p[0]+dx/L*d,p[1]+dy/L*d];};
+var RN=['rT','rUR','rLR','rB','rLL','rUL'];
+function ringA(){return V.map(function(p,i){return A(RN[i],p);}).concat([A('rc',RC,null,{virt:true})]);}
+function ringB(st,bw){return st.map(function(s,i){var a=Array.isArray(s)?s:[s,s];return B(RN[i],RN[(i+1)%6],a[0],a[1],{c:'rc',bw:bw});});}
+var KEK=['2','1','2','1','2','1'];
+var SC=[];
+function scene(o){o.enters=o.enters||[];o.leaves=o.leaves||[];o.note=o.note||'';o.dur=o.dur||7000;SC.push(o);}
+
+/* S0 precursors */
+(function(){
+  var pv=[.62,.8],ev=[.66,.84];
+  var pa=function(id,p,o){return A(id,p,null,Object.assign({vis:[0,1],vw:pv},o||{}));};
+  var ea=function(id,p,o){return A(id,p,null,Object.assign({vis:[0,1],vw:ev},o||{}));};
+  scene({chip:'Start',tag:'The starting materials',title:'Where the pathway begins',fig:'Precursors',
+    nameA:'Photosynthesis → Carbohydrates',nameB:'PEP + Erythrose 4-phosphate',dur:9000,
+    edges:['photo>carb','carb>pep','carb>e4p'],active:['pep','e4p'],
+    phases:[[0,'Photosynthesis produces carbohydrates.'],[.2,'Carbohydrate metabolism splits into two routes: glycolysis and the pentose phosphate pathway.'],[.5,'Glycolysis delivers phospho-enol-pyruvic acid (PEP). The pentose phosphate pathway delivers erythrose 4-phosphate (E4P).'],[.86,'Both meet in the first reaction: C1–C3 come from PEP, C4–C7 from E4P.']],
+    atoms:[
+      A('photo',[75,40],null,{box:[130,40],lab:'Photosynthesis'}),
+      A('carb',[245,40],null,{box:[130,40],lab:'Carbohydrates',vis:[0,1],vw:[.1,.22]}),
+      A('glyc',[150,118],null,{box:[130,40],lab:'Glycolysis',vis:[0,1],vw:[.34,.46]}),
+      A('ppp',[390,118],null,{box:[210,46],lab:'Pentose phosphate\npathway',vis:[0,1],vw:[.34,.46]}),
+      pa('pC2',[150,252]),pa('pCm',[150,212],{lab:'CH2'}),pa('pHO',[108,276],{lab:'HOOC',la:'e'}),pa('pOP',[192,276],{lab:'OPO3H2',la:'s'}),
+      ea('eC4',[390,212],{lab:'CHO'}),ea('eC5',[390,252]),ea('eH5',[346,252],{lab:'H'}),ea('eO5',[434,252],{lab:'OH',la:'s'}),
+      ea('eC6',[390,292]),ea('eH6',[346,292],{lab:'H'}),ea('eO6',[434,292],{lab:'OH',la:'s'}),ea('eC7',[390,332],{lab:'CH2OPO3H2'})
+    ],
+    bonds:[B('pC2','pCm','2'),B('pC2','pHO','1'),B('pC2','pOP','1'),
+      B('eC4','eC5','1'),B('eC5','eC6','1'),B('eC6','eC7','1'),B('eC5','eH5','1'),B('eC5','eO5','1'),B('eC6','eH6','1'),B('eC6','eO6','1')],
+    arrows:[{a:[146,40],b:[178,40],tw:[.05,.16]},{a:[218,62],b:[168,96],tw:[.24,.36]},{a:[272,62],b:[348,94],tw:[.24,.36]},{a:[150,141],b:[150,188],tw:[.5,.6]},{a:[390,143],b:[390,188],tw:[.5,.6]}],
+    texts:[{x:150,y:322,text:'Phospho-enol-pyruvic acid (PEP)',size:14,bold:1,vis:[0,1],vw:[.7,.85]},
+      {x:390,y:372,text:'Erythrose 4-phosphate (E4P)',size:14,bold:1,vis:[0,1],vw:[.72,.87]},
+      {x:280,y:406,text:'C1–C3 from PEP  ·  C4–C7 from E4P',size:14,vis:[0,1],vw:[.88,1],fill:'var(--mut)'}]
+  });
+})();
+
+/* S1 PEP + E4P -> C7 acid */
+(function(){
+  var X=230,dy=48,tw=[.05,.55];
+  var m=function(id,x,y,o){return A(id,[x,y+dy],[x,y],Object.assign({tw:tw},o||{}));};
+  scene({chip:'PEP + E4P',tag:'Reaction 1 · forms compound 1',title:'PEP and E4P join',fig:'C1–C3 from PEP · C4–C7 from E4P',
+    nameA:'PEP + Erythrose 4-phosphate',nameB:'2-Keto-3-deoxy-7-phospho-D-glucoheptonic acid',
+    leaves:['Phosphate group'],edges:['pep>n1','e4p>n1'],active:['n1'],
+    note:'Not in the figure: the release of PEP’s phosphate is read from comparing the two structures (the product carries no phosphate on C2).',
+    phases:[[0,'PEP (C1–C3) is in place. Erythrose 4-phosphate (C4–C7) waits below.'],[.08,'E4P rises: its aldehyde carbon (C4) approaches C3 of PEP.'],[.5,'A new C3–C4 bond forms; the aldehyde C=O becomes C–OH.'],[.72,'PEP’s phosphate group is released and C2 becomes a ketone (C=O).'],[.95,'Compound 1: C1–C3 from PEP, C4–C7 from E4P.']],
+    atoms:[
+      A('c1',[X,34],null,{lab:'COOH'}),A('c2',[X,74]),A('o2',[X+46,74],null,{lab:'O',la:'s'}),
+      A('c3',[X,114],null,{lab:['CH2',''],lw:[.6,.8]}),
+      A('pp',[X+92,74],[X+215,34],{lab:'PO3H2',la:'s',role:'leave',chip:1,cmode:'in',cw:[.66,.86],tw:[.62,.95]}),
+      m('c4',X,154),m('o4',X+46,154,{lab:['O','OH'],la:'s',lw:[.55,.75]}),
+      m('c5',X,194),m('h5',X-46,194,{lab:'H'}),m('o5',X+46,194,{lab:'OH',la:'s'}),
+      m('c6',X,234),m('h6',X-46,234,{lab:'H'}),m('o6',X+46,234,{lab:'OH',la:'s'}),
+      m('c7',X,274,{lab:'CH2'}),m('o7',X,308,{lab:'O'}),m('p7',X,342,{lab:'PO3H2'})
+    ],
+    bonds:[B('c1','c2','1'),B('c2','c3','2','1',{bw:[.5,.75]}),B('c2','o2','1','2',{bw:[.6,.85]}),B('o2','pp','1','',{bw:[.6,.8]}),
+      B('c3','c4','','1',{bw:[.5,.7]}),B('c4','o4','2','1',{bw:[.5,.75]}),B('c4','c5','1'),B('c5','c6','1'),B('c6','c7','1'),
+      B('c5','h5','1'),B('c5','o5','1'),B('c6','h6','1'),B('c6','o6','1'),B('c7','o7','1'),B('o7','p7','1')]
+  });
+})();
+
+/* S2 cyclization */
+(function(){
+  var tw=[.15,.75],rc=[380,215],rr=60;
+  var P=[-90,-30,30,90,150,210].map(function(a){return [rc[0]+rr*Math.cos(a*Math.PI/180),rc[1]+rr*Math.sin(a*Math.PI/180)];});
+  var out=function(i,d){var p=P[i],dx=p[0]-rc[0],dy=p[1]-rc[1],L=Math.hypot(dx,dy);return [p[0]+dx/L*d,p[1]+dy/L*d];};
+  scene({chip:'Cyclize',tag:'Reaction 2 · forms compound 2',title:'Ring closure',fig:'Cyclization and removal of phosphate group',dur:8000,
+    nameA:'2-Keto-3-deoxy-7-phospho-D-glucoheptonic acid',nameB:'3-Dehydroquinic acid',leaves:['Phosphate group'],edges:['n1>n2'],active:['n2'],
+    note:'Schematic: the figure shows only the open chain and the finished ring, so the atom-by-atom mechanism is simplified.',
+    phases:[[0,'The C7 compound is an open chain (C1–C7).'],[.14,'The chain folds: the C7 end swings round towards C2.'],[.3,'The C7–O bond breaks and the phosphate group is released.'],[.55,'A new C7–C2 bond closes the six-membered ring.'],[.8,'C2 keeps –OH and –COOH; the hydroxyl on C4 becomes a ketone (C=O), as drawn in the figure.'],[.95,'3-Dehydroquinic acid.']],
+    atoms:[
+      A('c1',[190,34],[424,118],{lab:'COOH',tw:tw}),A('c2',[190,74],P[0],{tw:tw}),
+      A('o2',[236,74],[340,120],{lab:['O','HO'],la:['s','e'],lw:[.5,.7],tw:tw}),
+      A('c3',[190,114],P[5],{tw:tw}),A('c4',[190,154],P[4],{tw:tw}),
+      A('o4',[236,154],out(4,40),{lab:['OH','O'],la:['s','e'],lw:[.5,.7],tw:tw}),
+      A('c5',[190,194],P[3],{tw:tw}),A('h5',[144,194],[340,300],{lab:'H',vis:[1,0],vw:[.1,.4],tw:tw}),
+      A('o5',[236,194],[380,315],{lab:'OH',la:['s','m'],lw:[.5,.7],tw:tw}),
+      A('c6',[190,234],P[2],{tw:tw}),A('h6',[144,234],[420,230],{lab:'H',vis:[1,0],vw:[.1,.4],tw:tw}),
+      A('o6',[236,234],out(2,40),{lab:'OH',la:'s',tw:tw}),
+      A('c7',[190,274],P[1],{lab:['CH2',''],lw:[.5,.7],via:[400,330],tw:tw}),
+      A('o7',[190,308],[440,372],{lab:['O','HO'],la:['m','e'],lw:[.7,.9],role:'leave',tw:[.2,.85]}),
+      A('p7',[190,342],[500,372],{lab:'PO3H2',role:'leave',chip:1,cmode:'in',cw:[.7,.9],tw:[.2,.85]})
+    ],
+    bonds:[B('c2','c1','1','w',{bw:[.5,.8]}),B('c2','o2','2','h',{bw:[.5,.8]}),B('c2','c3','1'),B('c3','c4','1'),B('c4','c5','1'),B('c5','c6','1'),B('c6','c7','1'),
+      B('c7','c2','','1',{bw:[.55,.85]}),B('c4','o4','1','2',{bw:[.5,.8]}),B('c5','o5','1','h',{bw:[.5,.8]}),B('c6','o6','1','w',{bw:[.5,.8]}),
+      B('c5','h5','1','',{bw:[.1,.4]}),B('c6','h6','1','',{bw:[.1,.4]}),B('c7','o7','1','',{bw:[.15,.45]}),B('o7','p7','1','1',{col:'leave'})]
+  });
+})();
+
+/* S3 dehydration */
+scene({chip:'Dehydration',tag:'Reaction 3 · forms compound 3',title:'Dehydration',fig:'Dehydration',
+  nameA:'3-Dehydroquinic acid',nameB:'3-Dehydroshikimic acid',leaves:['H₂O'],edges:['n2>n3'],active:['n3'],
+  note:'Water is made from the C1 hydroxyl plus a hydrogen taken from the neighbouring carbon (C2).',
+  phases:[[0,'3-Dehydroquinic acid: the top ring carbon (C1) carries both –OH and –COOH.'],[.12,'The C1–OH bond breaks, and a hydrogen leaves the neighbouring carbon (C2).'],[.55,'OH and H meet: a water molecule forms and drifts away from the ring.'],[.82,'A C1=C2 double bond forms, giving 3-dehydroshikimic acid.']],
+  atoms:ringA().concat([
+    A('cooh',R(42,-90),R(0,-104),{lab:'COOH',tw:[.35,.9]}),
+    A('ow',R(-40,-93),R(-135,-108),{lab:['HO','H2O'],la:'e',lw:[.62,.78],role:'leave',chip:1,cmode:'B',tw:[.1,.8]}),
+    A('hw',RO(5,40),R(-125,-82),{lab:'H',role:'leave',vis:[1,0],vw:[.7,.82],tw:[.1,.75]}),
+    A('ok',RO(4,40),null,{lab:'O',la:'e'}),A('ob',RO(3,40),null,{lab:'OH'}),A('or',RO(2,40),null,{lab:'OH',la:'s'})]),
+  bonds:ringB(['1','1','1','1','1',['1','2']],[.4,.8]).concat([
+    B('rT','cooh','w','1',{bw:[.35,.9]}),B('rT','ow','h','',{bw:[.1,.4]}),B('rUL','hw','1','',{bw:[.1,.4]}),
+    B('rLL','ok','2'),B('rB','ob','h'),B('rLR','or','w')])
+});
+
+/* S4 hydrogenation */
+scene({chip:'Hydrogenation',tag:'Reaction 4 · forms compound 4',title:'Keto group becomes OH',fig:'Keto group → OH (hydrogenation)',badge:'gold',badgeText:'Shikimic acid – the pathway’s namesake',
+  nameA:'3-Dehydroshikimic acid',nameB:'Shikimic acid',enters:['H₂'],edges:['n3>n4'],active:['n4'],
+  note:'Not in the figure: in cells a reducing cofactor delivers the hydrogen.',
+  phases:[[0,'3-Dehydroshikimic acid has a keto group (C=O) on the lower-left ring carbon.'],[.15,'Hydrogen (H₂) approaches the carbonyl.'],[.5,'The C=O double bond becomes a single bond.'],[.8,'Oxygen picks up hydrogen: keto → OH. This is shikimic acid.']],
+  atoms:ringA().concat([
+    A('cooh',R(0,-104),null,{lab:'COOH'}),
+    A('ok',RO(4,40),null,{lab:['O','HO'],la:'e',lw:[.55,.75]}),A('ob',RO(3,40),null,{lab:'OH'}),A('or',RO(2,40),null,{lab:'OH',la:'s'}),
+    A('hin',R(-190,95),R(-118,58),{lab:'H2',role:'enter',chip:1,vis:[1,0],vw:[.62,.8],tw:[.1,.62]})]),
+  bonds:ringB(['1','1','1','1','1','2'],[.4,.8]).concat([
+    B('rT','cooh','1'),B('rLL','ok','2','h',{bw:[.5,.8]}),B('rB','ob','h'),B('rLR','or','w')])
+});
+
+/* S5 phosphorylation */
+scene({chip:'Phosphorylation',tag:'Reaction 5 · forms compound 5',title:'Phosphorylation',fig:'Phosphorylation',
+  nameA:'Shikimic acid',nameB:'Shikimic acid-3-phosphate',enters:['Phosphate group (–PO₃H₂)'],leaves:['H'],edges:['n4>n5'],active:['n5'],
+  note:'Not in the figure: in cells the phosphate is supplied by ATP.',
+  phases:[[0,'Shikimic acid has three OH groups. The one at the lower left is about to change.'],[.15,'Its hydrogen is displaced as a phosphate group (–PO₃H₂) approaches.'],[.6,'The phosphate group joins the oxygen.'],[.85,'Shikimic acid-3-phosphate.']],
+  atoms:ringA().concat([
+    A('cooh',R(0,-104),null,{lab:'COOH'}),A('ok',RO(4,40),null,{lab:'O'}),
+    A('hh',R(-102,50),R(-150,10),{lab:'H',role:'leave',vis:[1,0],vw:[.4,.7],tw:[.1,.7]}),
+    A('pg',R(-190,125),R(-123,50),{lab:'H2O3P',role:'enter',chip:1,cmode:'out',cw:[.72,.92],tw:[.25,.8]}),
+    A('ob',RO(3,40),null,{lab:'OH'}),A('or',RO(2,40),null,{lab:'OH',la:'s'})]),
+  bonds:ringB(['1','1','1','1','1','2']).concat([B('rT','cooh','1'),B('rLL','ok','h'),B('rB','ob','h'),B('rLR','or','w')])
+});
+
+/* S6 + PEP -> chorismic acid */
+scene({chip:'+ PEP',tag:'Reaction 6 · forms compound 6',title:'PEP adds on',fig:'+ Phospho-enol-pyruvic acid −H₂O (dehydration)',dur:8000,
+  nameA:'Shikimic acid-3-phosphate',nameB:'Chorismic acid',enters:['PEP'],leaves:['2 × phosphate group'],edges:['n5>n6'],active:['n6'],
+  note:'The figure summarises this step as a net dehydration. The structures show both phosphate groups (from the ring and from PEP) being released.',
+  phases:[[0,'Shikimic acid-3-phosphate (left) and PEP (right).'],[.08,'PEP’s phosphate pops off as its CH₂=C(COOH)– unit moves towards the ring oxygen.'],[.5,'The unit binds to the ring oxygen at the lower right.'],[.62,'The phosphate on the ring (lower left) is released too.'],[.85,'The ring double bonds shift: chorismic acid.']],
+  atoms:ringA().concat([
+    A('cooh',R(0,-104),null,{lab:'COOH'}),
+    A('olg',RO(4,40),R(-110,122),{lab:'H2O3PO',la:'e',role:'leave',chip:1,cmode:'in',cw:[.62,.82],tw:[.55,.9]}),
+    A('ob',RO(3,40),null,{lab:'OH'}),
+    A('or',RO(2,40),null,{lab:['OH','O'],la:'s',lw:[.5,.66]}),
+    A('ce',R(223,62),R(128,47),{tw:[.05,.5]}),A('cm',R(223,22),R(128,7),{lab:'CH2',tw:[.05,.5]}),
+    A('cc',R(261,84),R(166,69),{lab:'COOH',tw:[.05,.5]}),
+    A('pp',R(182,65),R(185,145),{lab:'H2O3PO',la:'e',role:'leave',chip:1,cmode:'in',cw:[.15,.4],tw:[.05,.5]})]),
+  bonds:ringB([['1','2'],'1','1','1',['1','2'],['2','1']],[.6,.9]).concat([
+    B('rT','cooh','1'),B('rLL','olg','h','',{bw:[.5,.7]}),B('rB','ob','h'),B('rLR','or','w'),
+    B('ce','cm','2'),B('ce','cc','1'),B('ce','pp','1','',{bw:[.08,.3]}),B('or','ce','','1',{bw:[.5,.7]})])
+});
+
+/* S7 rearrangement */
+scene({chip:'Rearrange',tag:'Reaction 7 · forms compound 7',title:'Shifting and rearrangement',fig:'Shifting / rearrangement',dur:8000,
+  nameA:'Chorismic acid',nameB:'Prephenic acid',edges:['n6>n7'],active:['n7'],
+  note:'Schematic: the enolpyruvyl unit moves from the ring oxygen to the ring carbon above it.',
+  phases:[[0,'Chorismic acid: the pyruvate-type unit hangs off the ring oxygen.'],[.15,'The C–O bond to the ring breaks and the unit swings towards the top carbon.'],[.5,'It re-attaches through its CH₂ carbon; the oxygen becomes a C=O.'],[.8,'Ring double bonds shift; H and OH now sit on the bottom carbon: prephenic acid.']],
+  atoms:ringA().concat([
+    A('cooh',R(0,-104),R(-38,-91),{lab:['COOH','HOOC'],la:['m','e'],lw:[.45,.65],tw:[.3,.8]}),
+    A('or',R(87,50),R(80,-110),{via:R(150,-40),lab:'O',tw:[.15,.85]}),
+    A('ce',R(128,47),R(80,-70),{tw:[.15,.85]}),A('cm',R(128,7),R(42,-93),{lab:['CH2',''],lw:[.55,.75],tw:[.15,.85]}),
+    A('cc',R(166,69),R(125,-47),{lab:'COOH',tw:[.15,.85]}),
+    A('ob',R(0,100),R(34,103),{lab:'OH',tw:[.4,.8]}),A('hb',R(-36,98),null,{lab:'H',vis:[0,1],vw:[.5,.8]})]),
+  bonds:ringB([['2','1'],['1','2'],'1','1','2','1'],[.45,.85]).concat([
+    B('rT','cooh','1','w',{bw:[.45,.8]}),B('rLR','or','w','',{bw:[.15,.45]}),B('or','ce','1','2',{bw:[.5,.8]}),B('ce','cm','2','1',{bw:[.5,.8]}),
+    B('ce','cc','1'),B('rT','cm','','h',{bw:[.5,.85]}),B('rB','ob','h'),B('rB','hb','','w',{bw:[.5,.8]})])
+});
+
+/* helper: prephenic acid atoms (start state) */
+function prephA(){return [
+  A('cm',R(42,-93),null,{}),A('ce',R(80,-70),null,{}),A('oe',R(80,-110),null,{lab:'O'}),A('cc',R(125,-47),null,{lab:'COOH'})];}
+
+/* S8 -> anthranilic acid */
+scene({chip:'→ Anthranilic',tag:'Branch · from compound 7',title:'Amination and shifting',fig:'Amination & shifting',dur:8000,
+  nameA:'Prephenic acid',nameB:'Anthranilic acid',enters:['NH₂'],leaves:['Side chain','OH'],edges:['n7>anth'],active:['anth'],
+  note:'Schematic. Which pieces leave is read from the two structures. Not in the figure: many textbooks make anthranilic acid directly from chorismic acid.',
+  phases:[[0,'Prephenic acid: a side chain and COOH on the top carbon, H and OH on the bottom carbon.'],[.1,'The side chain and the OH leave the ring.'],[.5,'The ring becomes aromatic; NH₂ approaches the ring next to the COOH.'],[.85,'Anthranilic acid: COOH and NH₂ side by side.']],
+  atoms:ringA().concat([
+    A('cooh',R(-38,-91),R(0,-104),{lab:['HOOC','COOH'],la:['e','m'],lw:[.45,.65],tw:[.35,.85]}),
+    A('cm',R(42,-93),R(182,-133),{vis:[1,0],vw:[.3,.6],tw:[.1,.6]}),A('ce',R(80,-70),R(220,-110),{vis:[1,0],vw:[.3,.6],tw:[.1,.6]}),
+    A('oe',R(80,-110),R(220,-150),{lab:'O',role:'leave',vis:[1,0],vw:[.3,.6],tw:[.1,.6]}),A('cc',R(125,-47),R(265,-87),{lab:'COOH',role:'leave',vis:[1,0],vw:[.3,.6],tw:[.1,.6]}),
+    A('ob',R(34,103),R(90,140),{lab:'OH',role:'leave',vis:[1,0],vw:[.35,.6],tw:[.15,.6]}),
+    A('hb',R(-36,98),null,{lab:'H',vis:[1,0],vw:[.2,.45]}),
+    A('nn',R(210,-20),RO(1,40),{lab:'NH2',la:'s',role:'enter',chip:1,cmode:'out',cw:[.88,1],vis:[0,1],vw:[.5,.65],tw:[.5,.85]})]),
+  bonds:ringB([['1','2'],['2','1'],['1','2'],'1','2','1'],[.5,.9]).concat([
+    B('rT','cooh','w','1',{bw:[.5,.85]}),B('rT','cm','h','',{bw:[.1,.35]}),B('cm','ce','1','1',{col:'leave'}),B('ce','oe','2','2',{col:'leave'}),B('ce','cc','1','1',{col:'leave'}),
+    B('rB','ob','h','',{bw:[.15,.4]}),B('rB','hb','w','',{bw:[.1,.35]}),B('rUR','nn','','1',{bw:[.7,.9]})])
+});
+
+/* S9 -> tryptophan */
+(function(){
+  var pcx=R(46.6,-80.8);
+  scene({chip:'→ Tryptophan',tag:'Final product · from anthranilic acid',title:'Building the indole ring',fig:'+ Phosphoribosyl pyrophosphate + Serine',dur:9500,badge:'final',badgeText:'Final product: an amino acid',
+    nameA:'Anthranilic acid',nameB:'Tryptophan',enters:['PRPP','Serine'],leaves:['CO₂'],edges:['anth>trp'],active:['trp'],
+    note:'Schematic: several intermediate steps are condensed. Not in the figure: the ring COOH leaves as CO₂. PRPP = phosphoribosyl pyrophosphate.',
+    phases:[[0,'Anthranilic acid: COOH and NH₂ on neighbouring ring carbons.'],[.06,'The ring COOH is lost as CO₂.'],[.25,'Phosphoribosyl pyrophosphate (PRPP) approaches.'],[.55,'Nitrogen and two new carbons close a five-membered ring fused to the benzene ring.'],[.76,'Serine supplies the amino-acid side chain.'],[.95,'Tryptophan.']],
+    atoms:ringA().concat([A('pc',pcx,null,{virt:true}),
+      A('cooh',R(0,-104),R(-150,-120),{lab:['COOH','CO2'],la:['m','e'],lw:[.25,.4],role:'leave',chip:1,cmode:'B',tw:[.05,.4]}),
+      A('nn',RO(1,40),R(96.5,-70),{lab:['NH2','NH'],la:'s',lw:[.45,.65],tw:[.45,.7]}),
+      A('c2',R(72,-125),null,{vis:[0,1],vw:[.55,.7]}),A('c3',R(12,-119),null,{vis:[0,1],vw:[.55,.7]}),
+      A('cb',R(-16,-155),null,{vis:[0,1],vw:[.82,.96]}),A('ca',R(24,-175),null,{vis:[0,1],vw:[.82,.96]}),
+      A('na',R(24,-215),null,{lab:'NH2',vis:[0,1],vw:[.82,.96]}),A('cx',R(66,-189),null,{lab:'COOH',vis:[0,1],vw:[.82,.96]}),
+      A('prpp',R(215,-150),R(150,-110),{lab:'PRPP',role:'enter',chip:1,fade:[.2,.32,.62,.76],tw:[.2,.55]}),
+      A('ser',R(-190,-195),R(-80,-165),{lab:'Serine',role:'enter',chip:1,fade:[.5,.62,.86,.96],tw:[.5,.86]})]),
+    bonds:ringB(KEK).concat([B('rT','cooh','1','',{bw:[.05,.25]}),B('rUR','nn','1'),
+      B('nn','c2','','1',{bw:[.6,.8]}),B('c2','c3','','2',{bw:[.62,.82],c:'pc'}),B('c3','rT','','1',{bw:[.62,.82]}),
+      B('c3','cb','','1',{bw:[.86,.98]}),B('cb','ca','','1',{bw:[.86,.98]}),B('ca','na','','1',{bw:[.86,.98]}),B('ca','cx','','1',{bw:[.86,.98]})])
+  });
+})();
+
+/* S10 -> phenylpyruvic acid */
+scene({chip:'→ Phenylpyruvic',tag:'Branch · from compound 7',title:'Loss of water and CO₂',fig:'−H₂O −CO₂',dur:7500,
+  nameA:'Prephenic acid',nameB:'Phenylpyruvic acid',leaves:['CO₂','H₂O'],edges:['n7>phpy'],active:['phpy'],
+  note:'Read from the structures: the carboxyl hydrogen and the ring OH leave together as water.',
+  phases:[[0,'Prephenic acid: COOH and a side chain on the top carbon, H and OH on the bottom carbon.'],[.15,'The carboxyl group leaves the ring as CO₂.'],[.3,'The ring OH leaves too, and with a hydrogen from the carboxyl it becomes H₂O.'],[.6,'With both groups gone the ring shifts its double bonds and becomes aromatic.'],[.9,'Phenylpyruvic acid.']],
+  atoms:ringA().concat(prephA(),[
+    A('hc',R(-38,-91),R(-135,-135),{lab:['HOOC','CO2'],la:'e',lw:[.35,.5],role:'leave',chip:1,cmode:'B',tw:[.15,.65]}),
+    A('hb',R(-36,98),null,{lab:'H',vis:[1,0],vw:[.3,.5]}),
+    A('ob',R(34,103),R(96,132),{lab:['OH','H2O'],lw:[.5,.65],role:'leave',chip:1,cmode:'B',tw:[.3,.75]})]),
+  bonds:ringB([['1','2'],['2','1'],['1','2'],'1','2','1'],[.55,.9]).concat([
+    B('rT','hc','w','',{bw:[.15,.4]}),B('rB','hb','w','',{bw:[.2,.4]}),B('rB','ob','h','',{bw:[.3,.5]}),
+    B('rT','cm','h','1',{bw:[.55,.9]}),B('cm','ce','1'),B('ce','oe','2'),B('ce','cc','1')])
+});
+
+/* S11 -> phenylalanine */
+scene({chip:'→ Phenylalanine',tag:'Final product · from phenylpyruvic acid',title:'Reductive amination',fig:'Reductive amination',badge:'final',badgeText:'Final product: an amino acid',
+  nameA:'Phenylpyruvic acid',nameB:'Phenylalanine',enters:['NH₂'],leaves:['O (as H₂O)'],edges:['phpy>phe'],active:['phe'],
+  note:'Schematic: the keto oxygen is replaced by an amino group.',
+  phases:[[0,'Phenylpyruvic acid has a keto group (C=O) on the side chain.'],[.12,'The keto oxygen is removed.'],[.5,'An amino group (NH₂) takes its place.'],[.85,'Phenylalanine – a final product of the pathway.']],
+  atoms:ringA().concat([A('cm',R(42,-93)),A('ce',R(80,-70)),A('cc',R(125,-47),null,{lab:'COOH'}),
+    A('oe',R(80,-110),R(150,-150),{lab:['O','H2O'],lw:[.4,.55],role:'leave',chip:1,cmode:'B',tw:[.1,.55]}),
+    A('ne',R(10,-165),R(80,-110),{lab:'NH2',role:'enter',vis:[0,1],vw:[.4,.6],tw:[.4,.8]})]),
+  bonds:ringB(KEK).concat([B('rT','cm','1'),B('cm','ce','1'),B('ce','cc','1'),B('ce','oe','2','',{bw:[.1,.4]}),B('ce','ne','','1',{bw:[.65,.85]})])
+});
+
+/* S12 -> p-hydroxyphenylpyruvic acid */
+scene({chip:'→ p-HPP',tag:'Branch · from compound 7',title:'Loss of CO₂',fig:'−CO₂',dur:7000,
+  nameA:'Prephenic acid',nameB:'p-Hydroxyphenylpyruvic acid',leaves:['CO₂'],edges:['n7>hpp'],active:['hpp'],
+  note:'The figure shows a net loss of CO₂. The ring hydrogen is lost as the ring becomes aromatic; the OH stays.',
+  phases:[[0,'Prephenic acid: COOH and a side chain on the top carbon, H and OH at the bottom.'],[.15,'The carboxyl group leaves the ring as CO₂.'],[.5,'The ring hydrogen is lost and the ring becomes aromatic. The OH stays.'],[.9,'p-Hydroxyphenylpyruvic acid.']],
+  atoms:ringA().concat(prephA(),[
+    A('hc',R(-38,-91),R(-135,-135),{lab:['HOOC','CO2'],la:'e',lw:[.35,.5],role:'leave',chip:1,cmode:'B',tw:[.15,.65]}),
+    A('hb',R(-36,98),null,{lab:'H',vis:[1,0],vw:[.4,.65]}),
+    A('ob',R(34,103),R(0,100),{lab:'OH',tw:[.55,.9]})]),
+  bonds:ringB([['1','2'],['2','1'],['1','2'],'1','2','1'],[.55,.9]).concat([
+    B('rT','hc','w','',{bw:[.15,.4]}),B('rB','hb','w','',{bw:[.25,.5]}),B('rB','ob','h','1',{bw:[.55,.9]}),
+    B('rT','cm','h','1',{bw:[.55,.9]}),B('cm','ce','1'),B('ce','oe','2'),B('ce','cc','1')])
+});
+
+/* S13 -> tyrosine */
+scene({chip:'→ Tyrosine',tag:'Final product · from p-hydroxyphenylpyruvic acid',title:'Reductive amination',fig:'Reductive amination',badge:'final',badgeText:'Final product: an amino acid',
+  nameA:'p-Hydroxyphenylpyruvic acid',nameB:'Tyrosine',enters:['NH₂'],leaves:['O (as H₂O)'],edges:['hpp>tyr'],active:['tyr'],
+  note:'Schematic: the keto oxygen is replaced by an amino group.',
+  phases:[[0,'p-Hydroxyphenylpyruvic acid has a keto group (C=O) on the side chain.'],[.12,'The keto oxygen is removed.'],[.5,'An amino group (NH₂) takes its place.'],[.85,'Tyrosine – a final product of the pathway.']],
+  atoms:ringA().concat([A('cm',R(42,-93)),A('ce',R(80,-70)),A('cc',R(125,-47),null,{lab:'COOH'}),A('ob',R(0,100),null,{lab:'OH'}),
+    A('oe',R(80,-110),R(150,-150),{lab:['O','H2O'],lw:[.4,.55],role:'leave',chip:1,cmode:'B',tw:[.1,.55]}),
+    A('ne',R(10,-165),R(80,-110),{lab:'NH2',role:'enter',vis:[0,1],vw:[.4,.6],tw:[.4,.8]})]),
+  bonds:ringB(KEK).concat([B('rT','cm','1'),B('rB','ob','1'),B('cm','ce','1'),B('ce','cc','1'),B('ce','oe','2','',{bw:[.1,.4]}),B('ce','ne','','1',{bw:[.65,.85]})])
+});
+
+/* ---------- renderer ---------- */
+function estW(s){var w=0;for(var i=0;i<s.length;i++){var ch=s[i];if(/[0-9]/.test(ch))w+=8.6;else if(/[A-Z]/.test(ch))w+=13.6;else if(/[a-z]/.test(ch))w+=10.6;else if(ch===' ')w+=5;else w+=9;}return w;}
+function astate(a,t){
+  var tw=a.tw||[0,1],e=ease(loc(t,tw)),x,y;
+  if(a.via){var u=1-e;x=u*u*a.p0[0]+2*u*e*a.via[0]+e*e*a.p1[0];y=u*u*a.p0[1]+2*u*e*a.via[1]+e*e*a.p1[1];}
+  else{x=lerp(a.p0[0],a.p1[0],e);y=lerp(a.p0[1],a.p1[1],e);}
+  var v=1;
+  if(a.fade){v=smooth(loc(t,[a.fade[0],a.fade[1]]))*(1-smooth(loc(t,[a.fade[2],a.fade[3]])));}
+  else if(a.vis){v=lerp(a.vis[0],a.vis[1],smooth(loc(t,a.vw||tw)));}
+  var lw=a.lw||[lerp(tw[0],tw[1],.35),lerp(tw[0],tw[1],.65)],S=smooth(loc(t,lw));
+  var A_='',B_='',oa=1,ob=0;
+  if(Array.isArray(a.lab)){A_=a.lab[0];B_=a.lab[1];oa=1-S;ob=S;}else{A_=a.lab||'';}
+  var anA=Array.isArray(a.la)?a.la[0]:(a.la||'m'),anB=Array.isArray(a.la)?a.la[1]:(a.la||'m');
+  var cur=ob>oa?B_:A_,an=ob>oa?anB:anA,ext=null;
+  if(!a.box&&!a.virt&&cur){ext={hw:an==='m'?estW(cur)/2+3:9,hh:11};}
+  return {x:x,y:y,v:v,A_:A_,B_:B_,oa:oa,ob:ob,anA:anA,anB:anB,ext:ext};
+}
+function trim(e,ux,uy){if(!e)return 0;return 1/Math.sqrt((ux/e.hw)*(ux/e.hw)+(uy/e.hh)*(uy/e.hh));}
+function f1(n){return n.toFixed(1);}
+function drawDef(type,pa,pb,cpos,col,op){
+  var dx=pb.x-pa.x,dy=pb.y-pa.y,L=Math.hypot(dx,dy);if(L<1)return '';
+  var ux=dx/L,uy=dy/L,nx=-uy,ny=ux,ta=trim(pa.ext,ux,uy)+1.5,tb=trim(pb.ext,-ux,-uy)+1.5;
+  if(L-ta-tb<5)return '';
+  var x1=pa.x+ux*ta,y1=pa.y+uy*ta,x2=pb.x-ux*tb,y2=pb.y-uy*tb,l=L-ta-tb;
+  var g=function(inner){return '<g opacity="'+op.toFixed(3)+'" style="stroke:'+col+';fill:'+col+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+inner+'</g>';};
+  var ln=function(a,b,c,d){return '<line x1="'+f1(a)+'" y1="'+f1(b)+'" x2="'+f1(c)+'" y2="'+f1(d)+'"/>';};
+  if(type==='1')return g(ln(x1,y1,x2,y2));
+  if(type==='2'){
+    if(cpos){var mx=(x1+x2)/2,my=(y1+y2)/2,side=((cpos.x-mx)*nx+(cpos.y-my)*ny)>=0?1:-1,o=6,sh=Math.min(10,l*.2);
+      return g(ln(x1,y1,x2,y2)+ln(x1+ux*sh+nx*side*o,y1+uy*sh+ny*side*o,x2-ux*sh+nx*side*o,y2-uy*sh+ny*side*o));}
+    var o2=3.3;return g(ln(x1+nx*o2,y1+ny*o2,x2+nx*o2,y2+ny*o2)+ln(x1-nx*o2,y1-ny*o2,x2-nx*o2,y2-ny*o2));
+  }
+  if(type==='w'){return g('<polygon stroke-width=".8" points="'+f1(x1)+','+f1(y1)+' '+f1(x2+nx*4.4)+','+f1(y2+ny*4.4)+' '+f1(x2-nx*4.4)+','+f1(y2-ny*4.4)+'"/>');}
+  if(type==='h'){var s='';for(var i=0;i<6;i++){var fr=(i+.5)/6,px=x1+(x2-x1)*fr,py=y1+(y2-y1)*fr,hw=.8+fr*3.8;s+=ln(px-nx*hw,py-ny*hw,px+nx*hw,py+ny*hw);}return g(s).replace('stroke-width="2.2"','stroke-width="1.6"');}
+  return '';
+}
+function bondColor(b){
+  if(!HL)return 'var(--ink)';
+  if(b.col==='leave')return 'var(--brk)';
+  if(b.s0===b.s1)return 'var(--ink)';
+  if(!b.s0)return 'var(--form)';
+  if(!b.s1)return 'var(--brk)';
+  return 'var(--chg)';
+}
+function bondSvg(b,st,t){
+  var sa=st[b.a],sb=st[b.b];if(!sa||!sb)return '';
+  var vis=Math.min(sa.v,sb.v);if(vis<.02)return '';
+  var S=smooth(loc(t,b.bw||[.3,.7])),col=bondColor(b),cpos=b.c?st[b.c]:null,out='';
+  if(b.s0===b.s1){if(b.s0)out+=drawDef(b.s0,sa,sb,cpos,col,vis);}
+  else{if(b.s0&&1-S>.02)out+=drawDef(b.s0,sa,sb,cpos,col,(1-S)*vis);if(b.s1&&S>.02)out+=drawDef(b.s1,sa,sb,cpos,col,S*vis);}
+  return out;
+}
+function txtSvg(str,x,y,an,op,fill,size,weight){
+  size=size||F;
+  var ta=an==='s'?'start':an==='e'?'end':'middle',dx=an==='s'?-7:an==='e'?7:0,inner='',sub=false;
+  str.split(/(\d+)/).forEach(function(seg){
+    if(!seg)return;
+    if(/^\d+$/.test(seg)){inner+='<tspan dy="'+(size*.2)+'" font-size="'+(size*.7)+'">'+seg+'</tspan>';sub=true;}
+    else{inner+=sub?'<tspan dy="'+(-size*.2)+'">'+seg+'</tspan>':seg;sub=false;}
+  });
+  return '<text x="'+f1(x+dx)+'" y="'+f1(y+size*.33)+'" text-anchor="'+ta+'" font-size="'+size+'" font-weight="'+(weight||500)+'" style="fill:'+fill+'" opacity="'+op.toFixed(3)+'">'+inner+'</text>';
+}
+function chipSvg(a,s,t){
+  if(!HL||!a.chip)return '';
+  var mode=a.cmode||'always',o=1;
+  if(mode==='B')o=s.ob;else if(mode==='in')o=smooth(loc(t,a.cw));else if(mode==='out')o=1-smooth(loc(t,a.cw));
+  o*=s.v;if(o<.02)return '';
+  var str=s.B_||s.A_;if(!str)return '';
+  var an=s.B_?s.anB:s.anA,w=estW(str),cx=s.x;
+  if(an==='s')cx=s.x-7+w/2;else if(an==='e')cx=s.x+7-w/2;
+  var c=a.role==='enter'?'var(--enter)':'var(--leave)';
+  return '<rect x="'+f1(cx-w/2-9)+'" y="'+f1(s.y-15)+'" width="'+f1(w+18)+'" height="30" rx="9" style="fill:'+c+';stroke:'+c+'" fill-opacity="'+(.14*o).toFixed(3)+'" stroke-opacity="'+(.85*o).toFixed(3)+'" stroke-width="1.5"/>';
+}
+function atomSvg(a,s,t){
+  if(a.virt)return '';
+  var out='';
+  if(a.box){
+    var w=a.box[0],h=a.box[1],lines=(s.A_||'').split('\n'),y0=s.y-(lines.length-1)*9.5;
+    out+='<g opacity="'+s.v.toFixed(3)+'"><rect x="'+f1(s.x-w/2)+'" y="'+f1(s.y-h/2)+'" width="'+w+'" height="'+h+'" rx="12" stroke-width="2" style="fill:var(--pre-bg);stroke:var(--pre)"/>';
+    lines.forEach(function(ln,i){out+=txtSvg(ln,s.x,y0+i*19,'m',1,'var(--ink)',16,700);});
+    return out+'</g>';
+  }
+  var col=(HL&&a.role)?(a.role==='leave'?'var(--leave)':'var(--enter)'):'var(--ink)';
+  out+=chipSvg(a,s,t);
+  if(s.A_&&s.oa*s.v>.02)out+=txtSvg(s.A_,s.x,s.y,s.anA,s.oa*s.v,col);
+  if(s.B_&&s.ob*s.v>.02)out+=txtSvg(s.B_,s.x,s.y,s.anB,s.ob*s.v,col);
+  return out;
+}
+function stageSvg(sc,t){
+  var st={},s='';
+  sc.atoms.forEach(function(a){st[a.id]=astate(a,t);});
+  (sc.texts||[]).forEach(function(x){var v=x.vis?lerp(x.vis[0],x.vis[1],smooth(loc(t,x.vw))):1;if(v>.02)s+=txtSvg(x.text,x.x,x.y,'m',v,x.fill||'var(--ink)',x.size||14,x.bold?700:500);});
+  (sc.arrows||[]).forEach(function(ar){
+    var e=ease(loc(t,ar.tw));if(e<.02)return;
+    var ex=lerp(ar.a[0],ar.b[0],e),ey=lerp(ar.a[1],ar.b[1],e),dx=ar.b[0]-ar.a[0],dy=ar.b[1]-ar.a[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;
+    s+='<g style="stroke:var(--arrow);fill:var(--arrow)"><line x1="'+ar.a[0]+'" y1="'+ar.a[1]+'" x2="'+f1(ex)+'" y2="'+f1(ey)+'" stroke-width="3" stroke-linecap="round"/>'+
+      '<polygon points="'+f1(ex)+','+f1(ey)+' '+f1(ex-ux*11-uy*6)+','+f1(ey-uy*11+ux*6)+' '+f1(ex-ux*11+uy*6)+','+f1(ey-uy*11-ux*6)+'"/></g>';
+  });
+  sc.bonds.forEach(function(b){s+=bondSvg(b,st,t);});
+  sc.atoms.forEach(function(a){s+=atomSvg(a,st[a.id],t);});
+  return s;
+}
+
+/* ---------- pathway map ---------- */
+var NODES=[
+ {id:'photo',x:2,y:22,w:94,h:38,l:'Photosynthesis',k:'pre',r:0},
+ {id:'carb',x:104,y:22,w:94,h:38,l:'Carbohydrates',k:'pre',r:0},
+ {id:'pep',x:208,y:0,w:100,h:40,l:'PEP\nfrom glycolysis',k:'pre',r:0},
+ {id:'e4p',x:208,y:44,w:100,h:46,l:'E4P\nfrom pentose\nphosphate pathway',k:'pre',r:0},
+ {id:'n1',x:316,y:22,w:96,h:40,l:'1 · Keto-deoxy-\nphosphoheptonic',k:'int',r:1},
+ {id:'n2',x:316,y:112,w:96,h:40,l:'2 · 3-Dehydro-\nquinic acid',k:'int',r:2},
+ {id:'n3',x:212,y:112,w:96,h:40,l:'3 · 3-Dehydro-\nshikimic acid',k:'int',r:3},
+ {id:'n4',x:108,y:112,w:96,h:40,l:'4 · Shikimic\nacid',k:'gold',r:4},
+ {id:'n5',x:4,y:112,w:96,h:40,l:'5 · Shikimic acid-\n3-phosphate',k:'int',r:5},
+ {id:'n6',x:4,y:204,w:96,h:40,l:'6 · Chorismic\nacid',k:'int',r:6},
+ {id:'n7',x:108,y:204,w:96,h:40,l:'7 · Prephenic\nacid',k:'int',r:7},
+ {id:'anth',x:212,y:158,w:96,h:40,l:'Anthranilic\nacid',k:'int',r:8},
+ {id:'phpy',x:212,y:204,w:96,h:40,l:'Phenylpyruvic\nacid',k:'int',r:10},
+ {id:'hpp',x:212,y:250,w:96,h:40,l:'p-Hydroxyphenyl-\npyruvic acid',k:'int',r:12},
+ {id:'trp',x:316,y:158,w:96,h:40,l:'Tryptophan',k:'fin',r:9},
+ {id:'phe',x:316,y:204,w:96,h:40,l:'Phenylalanine',k:'fin',r:11},
+ {id:'tyr',x:316,y:250,w:96,h:40,l:'Tyrosine',k:'fin',r:13}];
+var EDGES=['photo>carb','carb>pep','carb>e4p','pep>n1','e4p>n1','n1>n2','n2>n3','n3>n4','n4>n5','n5>n6','n6>n7','n7>anth','n7>phpy','n7>hpp','anth>trp','phpy>phe','hpp>tyr'];
+var NB={};NODES.forEach(function(n){NB[n.id]=n;});
+var KC={pre:['var(--pre-bg)','var(--pre)'],int:['var(--card)','var(--int)'],gold:['var(--gold-bg)','var(--gold)'],fin:['var(--fin-bg)','var(--fin)']};
+function edgePts(a,b){
+  var ca=[a.x+a.w/2,a.y+a.h/2],cb=[b.x+b.w/2,b.y+b.h/2],dx=cb[0]-ca[0],dy=cb[1]-ca[1];
+  var clip=function(n){var hw=n.w/2+4,hh=n.h/2+4;return Math.min(dx?hw/Math.abs(dx):1e9,dy?hh/Math.abs(dy):1e9);};
+  var ta=clip(a),tb=clip(b);
+  return [ca[0]+dx*ta,ca[1]+dy*ta,cb[0]-dx*tb,cb[1]-dy*tb];
+}
+function mapSvg(sc,i){
+  var s='<defs><marker id="mk" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--line)"/></marker><marker id="mko" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0L8,4L0,8z" style="fill:var(--arrow)"/></marker></defs>';
+  EDGES.forEach(function(e){
+    var p=e.split('>'),q=edgePts(NB[p[0]],NB[p[1]]),on=sc.edges.indexOf(e)>=0;
+    s+='<line class="edge'+(on?' on':'')+'" x1="'+f1(q[0])+'" y1="'+f1(q[1])+'" x2="'+f1(q[2])+'" y2="'+f1(q[3])+'" marker-end="url(#'+(on?'mko':'mk')+')"/>';
+  });
+  NODES.forEach(function(n){
+    var reached=n.r<=i,act=sc.active.indexOf(n.id)>=0,c=KC[n.k],lines=n.l.split('\n'),y0=n.y+n.h/2-(lines.length-1)*6.2;
+    s+='<g class="node" data-r="'+n.r+'" opacity="'+(reached?1:.5)+'" tabindex="0" role="button" aria-label="'+n.l.replace('\n',' ')+'">'+
+      '<rect x="'+n.x+'" y="'+n.y+'" width="'+n.w+'" height="'+n.h+'" rx="8" stroke-width="'+(act?3.5:1.6)+'" style="fill:'+c[0]+';stroke:'+(act?'var(--arrow)':c[1])+'"/>';
+    lines.forEach(function(ln,k){s+='<text x="'+(n.x+n.w/2)+'" y="'+f1(y0+k*12.4+3.6)+'" text-anchor="middle" font-size="10.5" font-weight="'+(k===0?650:500)+'" style="fill:var(--ink)">'+ln+'</text>';});
+    s+='</g>';
+  });
+  return s;
+}
+
+/* ---------- UI ---------- */
+var $=function(id){return document.getElementById(id);};
+var idx=0,T=0,playing=false,speed=1,autoNext=true,endAt=0,lastTs=0,dragging=false;
+var reduce=false;try{reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+
+function buildSteps(){
+  $('steps').innerHTML=SC.map(function(sc,i){return '<button class="step" data-i="'+i+'"><span class="n">'+i+'</span>'+sc.chip+'</button>';}).join('');
+}
+function updateSteps(){
+  var els=$('steps').children;
+  for(var i=0;i<els.length;i++){els[i].className='step'+(i===idx?' on':(i<idx?' done':''));}
+  var cur=els[idx];if(cur&&cur.scrollIntoView){try{var box=$('steps');box.scrollTo({left:cur.offsetLeft-box.clientWidth/2+cur.clientWidth/2,behavior:'smooth'});}catch(e){}}
+}
+function eqHtml(sc){
+  var s='<span class="cmp">'+sc.nameA+'</span>';
+  sc.enters.forEach(function(x){s+=' <span class="plus">+</span> <span class="chip in">'+x+'</span>';});
+  s+=' <span class="ar">→</span> <span class="cmp">'+sc.nameB+'</span>';
+  sc.leaves.forEach(function(x){s+=' <span class="plus">+</span> <span class="chip out">'+x+'</span>';});
+  return s;
+}
+function buildInfo(){
+  var sc=SC[idx];
+  $('iTitle').textContent=sc.title;$('iTag').textContent=sc.tag;$('iFig').textContent='Figure label: '+sc.fig;
+  $('iEq').innerHTML=eqHtml(sc);$('iNote').textContent=sc.note;
+  $('iPhases').innerHTML=sc.phases.map(function(p,i){return '<li data-t="'+p[0]+'">'+p[1]+'</li>';}).join('');
+  $('nA').textContent=sc.nameA;$('nB').textContent=sc.nameB;
+  var bd=$('badge');if(sc.badge){bd.hidden=false;bd.className='badge '+sc.badge;bd.textContent=sc.badgeText;}else{bd.hidden=true;}
+  $('map').innerHTML=mapSvg(sc,idx);
+  $('prev').disabled=idx===0;$('next').disabled=idx===SC.length-1;
+  updateSteps();
+}
+function render(){
+  var sc=SC[idx];
+  $('stage').innerHTML=stageSvg(sc,T);
+  var S=smooth(loc(T,[.3,.9]));
+  $('nA').style.opacity=lerp(1,.45,S);$('nB').style.opacity=lerp(.45,1,S);
+  var pi=0;sc.phases.forEach(function(p,i){if(T>=p[0]-1e-6)pi=i;});
+  var lis=$('iPhases').children;for(var i=0;i<lis.length;i++){lis[i].className=i===pi?'on':'';}
+  if(!dragging)$('scrub').value=Math.round(T*1000);
+  $('play').textContent=playing?'⏸':'▶';
+}
+function go(i,t0,play){
+  idx=clamp(i,0,SC.length-1);T=t0||0;endAt=0;buildInfo();
+  if(play!==undefined)playing=play;
+  render();
+}
+function loop(ts){
+  if(!lastTs)lastTs=ts;var dt=Math.min(80,ts-lastTs);lastTs=ts;
+  if(playing&&!dragging){
+    if(T<1){T=Math.min(1,T+dt*speed/SC[idx].dur);endAt=0;}
+    else{
+      if(autoNext&&idx<SC.length-1){if(!endAt)endAt=ts;if(ts-endAt>1200){go(idx+1,0);endAt=0;}}
+      else{playing=false;}
+    }
+    render();
+  }
+  requestAnimationFrame(loop);
+}
+
+/* events */
+$('steps').addEventListener('click',function(e){var b=e.target.closest('.step');if(b)go(+b.getAttribute('data-i'),0,true);});
+$('play').addEventListener('click',function(){if(!playing&&T>=1){T=0;}playing=!playing;endAt=0;render();});
+$('replay').addEventListener('click',function(){T=0;playing=true;endAt=0;render();});
+$('prev').addEventListener('click',function(){go(idx-1,0,true);});
+$('next').addEventListener('click',function(){go(idx+1,0,true);});
+$('scrub').addEventListener('input',function(e){dragging=true;playing=false;T=+e.target.value/1000;render();});
+$('scrub').addEventListener('change',function(){dragging=false;});
+$('speed').addEventListener('change',function(e){speed=+e.target.value;});
+$('auto').addEventListener('change',function(e){autoNext=e.target.checked;});
+$('hl').addEventListener('change',function(e){HL=e.target.checked;render();});
+$('iPhases').addEventListener('click',function(e){var li=e.target.closest('li');if(li){T=Math.min(.999,parseFloat(li.getAttribute('data-t'))+.003);playing=false;render();}});
+$('map').addEventListener('click',function(e){var n=e.target.closest('.node');if(n)go(+n.getAttribute('data-r'),0,true);});
+$('map').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){var n=e.target.closest&&e.target.closest('.node');if(n){e.preventDefault();go(+n.getAttribute('data-r'),0,true);}}});
+document.addEventListener('keydown',function(e){
+  var tg=e.target&&e.target.tagName;if(tg==='INPUT'||tg==='SELECT'||tg==='BUTTON')return;
+  if(e.key===' '){e.preventDefault();$('play').click();}
+  else if(e.key==='ArrowRight')go(idx+1,0,true);else if(e.key==='ArrowLeft')go(idx-1,0,true);
+});
+
+buildSteps();
+go(0,0,!reduce);
+window.__dbg={SC:SC,stageSvg:stageSvg,mapSvg:mapSvg};
+requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
