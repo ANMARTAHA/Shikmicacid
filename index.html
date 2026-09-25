@@ -74,6 +74,32 @@ h1{font-size:24px;line-height:1.15;margin:2px 0 4px;color:var(--navy);letter-spa
 @keyframes dash{to{stroke-dashoffset:-20}}
 .node{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.edge.on{animation:none}.phases li{transition:none}}
+.ar-section{direction:rtl;text-align:right;font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+.ar-section h1.ar-h1{font-size:22px;margin:0 0 6px;color:var(--navy)}
+.ar-section h2{font-size:17px;margin:16px 0 8px;color:var(--navy)}
+.ar-section h3{font-size:15px;margin:12px 0 6px;color:var(--navy)}
+.ar-section p{margin:0 0 10px;line-height:1.9}
+.ar-section ol,.ar-section ul{margin:0 0 10px;padding-right:22px;padding-left:0;line-height:1.9}
+.ar-section li{margin:0 0 8px}
+.ar-section .eqline{background:var(--pre-bg);color:var(--pre);border-radius:8px;padding:8px 12px;font-weight:650;margin:0 0 14px;display:inline-block}
+.ar-table{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:13.5px}
+.ar-table th,.ar-table td{border:1px solid var(--line);padding:8px 10px;text-align:right}
+.ar-table th{background:var(--pre-bg);color:var(--navy);font-weight:700}
+.ar-table tr:nth-child(even) td{background:#f7f9fd}
+.ar-abbr-table{width:100%;border-collapse:collapse;margin:8px 0 6px;font-size:13.5px}
+.ar-abbr-table th,.ar-abbr-table td{border:1px solid var(--line);padding:8px 10px;text-align:right}
+.ar-abbr-table th{background:var(--gold-bg);color:var(--gold);font-weight:700}
+.ar-abbr-table tr:nth-child(even) td{background:#f7f9fd}
+.ar-hint{font-size:12px;font-weight:500;color:var(--mut)}
+.ar-acc{display:flex;flex-direction:column;gap:8px;margin:0 0 10px}
+.ar-step{border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden}
+.ar-step summary{cursor:pointer;list-style:none;padding:10px 14px;font-weight:650;color:var(--navy);display:flex;align-items:center;gap:8px;position:relative}
+.ar-step summary::-webkit-details-marker{display:none}
+.ar-step summary::after{content:'▾';margin-right:auto;color:var(--acc);transition:transform .2s;font-size:12px}
+.ar-step[open] summary::after{transform:rotate(180deg)}
+.ar-step summary:hover{background:var(--pre-bg)}
+.ar-stepnum{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:11px;background:var(--pre);color:#fff;font-size:12px;font-weight:700}
+.ar-step p{margin:0;padding:0 14px 12px;line-height:1.9;color:var(--ink)}
 </style>
 </head>
 <body>
@@ -126,6 +152,65 @@ h1{font-size:24px;line-height:1.15;margin:2px 0 4px;color:var(--navy);letter-spa
     </div>
   </div>
   <p class="foot">Source: the pathway figure you provided. Animations are schematic: atoms move and bonds change as the figure’s structures and labels imply. Notes marked “not in the figure” add context the figure does not state.</p>
+
+  <section class="card ar-section" lang="ar" dir="rtl" aria-label="النص العربي لمسار حمض الشيكيميك">
+    <h1 class="ar-h1">مسار حمض الشيكيميك (Shikimic Acid Pathway)</h1>
+    <div class="eqline">PEP + إريثروز 4-فوسفات ← حمض الكوريسميك ← الأحماض الأمينية العطرية</div>
+
+    <h2>نظرة عامة على المسار</h2>
+    <p>مسار حمض الشيكيميك هو طريق أيضي (استقلابي) يوجد في النباتات والكائنات الدقيقة. يقوم هذا المسار بتحويل السلائف (المواد الأولية) الكربوهيدراتية الناتجة عن تحلل الجلوكوز (Glycolysis) ومسار فوسفات البنتوز إلى أحماض أمينية عطرية، وهي: الفينيل ألانين، والتيروزين، والتربتوفان.</p>
+
+    <h3>السلائف الأساسية من الأيض الأولي</h3>
+    <p>عملية التمثيل الضوئي تُكوّن الكربوهيدرات، والتي تُعطي سليفتين رئيسيتين:</p>
+    <ul>
+      <li><b>حمض الفوسفوإينول بيروفيك (PEP):</b> ينشأ عن طريق تحلل الجلوكوز (يمد المسار بالذرات C1–C3).</li>
+      <li><b>إريثروز 4-فوسفات (E4P):</b> ينشأ عن طريق مسار فوسفات البنتوز (يمد المسار بالذرات C4–C7).</li>
+    </ul>
+
+    <h2>خطوات المسار <span class="ar-hint">(اضغط على أي خطوة لعرض الشرح)</span></h2>
+    <div class="ar-acc">
+      <details class="ar-step"><summary><span class="ar-stepnum">1</span> التكاثف لتكوين مشتق حمض الجلوكوهيبتونيك</summary><p>يتحد PEP مع E4P لينتج حمض 2-كيتو-3-داوكسي-7-فوسفو-D-جلوكوهيبتونيك.</p></details>
+      <details class="ar-step"><summary><span class="ar-stepnum">2</span> التحلق (الحلقنة) لتكوين حمض 3-ديهيدروكينيك</summary><p>تحدث عملية التحلق مع فقدان مجموعة فوسفات لتكوين حمض 3-ديهيدروكينيك.</p></details>
+      <details class="ar-step"><summary><span class="ar-stepnum">3</span> الجفاف (نزع الماء) لتكوين حمض 3-ديهيدروشيكيميك</summary><p>يؤدي نزع جزيء ماء (H2O) إلى تحويل حمض 3-ديهيدروكينيك إلى حمض 3-ديهيدروشيكيميك.</p></details>
+      <details class="ar-step"><summary><span class="ar-stepnum">4</span> تكوين حمض الشيكيميك (المركب الذي سُمّي المسار باسمه)</summary><p>يتم اختزال مجموعة الكيتون إلى مجموعة هيدروكسيل (عبر الهدرجة) لتكوين حمض الشيكيميك.</p></details>
+      <details class="ar-step"><summary><span class="ar-stepnum">5</span> الفسفرة لتكوين حمض الشيكيميك-3-فوسفات</summary><p>تؤدي فسفرة حمض الشيكيميك إلى إنتاج حمض الشيكيميك-3-فوسفات.</p></details>
+      <details class="ar-step"><summary><span class="ar-stepnum">6</span> تكوين حمض الكوريسميك</summary><p>يتفاعل حمض الشيكيميك-3-فوسفات مع جزيء ثانٍ من PEP، ثم يحدث نزع للماء، لتكوين حمض الكوريسميك (نقطة التفرع الرئيسية في المسار).</p></details>
+      <details class="ar-step"><summary><span class="ar-stepnum">7</span> إعادة الترتيب لتكوين حمض البريفينيك</summary><p>يخضع حمض الكوريسميك لعملية إعادة ترتيب داخلي لينتج حمض البريفينيك.</p></details>
+    </div>
+
+    <h2>تخليق الأحماض الأمينية العطرية النهائية <span class="ar-hint">(اضغط على أي فرع لعرض الشرح)</span></h2>
+    <div class="ar-acc">
+      <details class="ar-step"><summary>أ) فرع التربتوفان</summary><p>يخضع حمض الكوريسميك لعملية أمنة (إضافة مجموعة أمين) وإعادة ترتيب لتكوين حمض الأنثرانيليك. ثم تؤدي إضافة فوسفوريبوزيل بيروفوسفات مع السيرين إلى إنتاج حمض التربتوفان الأميني.</p></details>
+      <details class="ar-step"><summary>ب) فرع الفينيل ألانين</summary><p>يفقد حمض البريفينيك جزيء ماء وثاني أكسيد الكربون (-H2O، -CO2) ليتكون حمض الفينيل بيروفيك. ثم تؤدي عملية الأمنة الاختزالية لحمض الفينيل بيروفيك إلى إنتاج حمض الفينيل ألانين الأميني.</p></details>
+      <details class="ar-step"><summary>ج) فرع التيروزين</summary><p>يفقد حمض البريفينيك ثاني أكسيد الكربون (-CO2) ليتكون حمض p-هيدروكسي فينيل بيروفيك. وتؤدي عملية الأمنة الاختزالية إلى إنتاج حمض التيروزين الأميني.</p></details>
+    </div>
+
+    <h2>أهم النواتج الوسيطة والنهائية</h2>
+    <table class="ar-table">
+      <thead><tr><th>المركب الوسيط / الناتج</th><th>المصدر / التفاعل</th><th>الدور في المسار</th></tr></thead>
+      <tbody>
+        <tr><td>حمض الشيكيميك</td><td>اختزال حمض 3-ديهيدروشيكيميك</td><td>المركب الذي سُمّي المسار باسمه</td></tr>
+        <tr><td>حمض الكوريسميك</td><td>حمض الشيكيميك-3-فوسفات + PEP</td><td>نقطة التفرع الرئيسية</td></tr>
+        <tr><td>التربتوفان</td><td>مسار حمض الأنثرانيليك</td><td>حمض أميني عطري نهائي</td></tr>
+        <tr><td>الفينيل ألانين</td><td>حمض الفينيل بيروفيك (أمنة اختزالية)</td><td>حمض أميني عطري نهائي</td></tr>
+        <tr><td>التيروزين</td><td>حمض p-هيدروكسي فينيل بيروفيك (أمنة اختزالية)</td><td>حمض أميني عطري نهائي</td></tr>
+      </tbody>
+    </table>
+
+    <h2>جدول توضيح الاختصارات</h2>
+    <table class="ar-abbr-table">
+      <thead><tr><th>الاختصار</th><th>الاسم بالإنجليزية</th><th>الاسم بالعربية</th></tr></thead>
+      <tbody>
+        <tr><td>PEP</td><td>Phospho-enol-pyruvic acid</td><td>حمض الفوسفوإينول بيروفيك</td></tr>
+        <tr><td>E4P</td><td>Erythrose 4-phosphate</td><td>إريثروز 4-فوسفات</td></tr>
+        <tr><td>H2O</td><td>Water</td><td>الماء (يُفقد أثناء نزع الماء)</td></tr>
+        <tr><td>CO2</td><td>Carbon dioxide</td><td>ثاني أكسيد الكربون</td></tr>
+        <tr><td>C1–C3</td><td>Carbon atoms 1 to 3</td><td>ذرات الكربون من 1 إلى 3 (من PEP)</td></tr>
+        <tr><td>C4–C7</td><td>Carbon atoms 4 to 7</td><td>ذرات الكربون من 4 إلى 7 (من E4P)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
   <div class="credits bottom" id="creditsBottom">© Study smart <span>·</span> <a href="https://t.me/AnmarTaha" target="_blank" rel="noopener">Telegram @AnmarTaha</a> <span>·</span> <a href="https://instagram.com/a.za18" target="_blank" rel="noopener">Instagram a.za18</a></div>
 </div>
 
